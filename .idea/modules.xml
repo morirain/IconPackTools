@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/IconPackTools.iml" filepath="$PROJECT_DIR$/IconPackTools.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lfilepickerlibrary/lfilepicker.iml" filepath="$PROJECT_DIR$/lfilepickerlibrary/lfilepicker.iml" />
     </modules>
   </component>
 </project>
