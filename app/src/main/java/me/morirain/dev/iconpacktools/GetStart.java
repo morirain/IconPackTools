@@ -37,7 +37,7 @@ public class GetStart {
     private static final Pattern filePattern = Pattern.compile("\"[_a-z0-9]+\"");
     private static final Pattern packagePattern = Pattern.compile("\\{[\\S]+/");
     private static final Pattern finallyPattern = Pattern.compile("[^\" {/\\n]+");
-    private static final Pattern endPattern = Pattern.compile("<iconback");
+    private static final Pattern endPattern = Pattern.compile("<item component=\"ComponentInfo\\{");
 
     private ProgressDialog dialog;
 
@@ -70,15 +70,12 @@ public class GetStart {
             return false;
         }
         this.path = path;
-        //copyIconFile();
         dialog = new ProgressDialog(context);
         dialog.setTitle("任务进行中");
-        //dialog.setMessage("in progress...");
         dialog.setCancelable(false);
         StartTask task = new StartTask();
         task.execute(list);
         IconBean.clear();
-        //progressDialog.dismiss();
         return true;
     }
 
@@ -126,9 +123,8 @@ public class GetStart {
                         while (matcher.find()) {
                             tempString = matcher.group();
                         }
-                        if (tempString.equals("<iconback")) {
-                            reader.close();
-                            break;
+                        if (tempString.equals("")) {
+                            continue;
                         }
                         // 读取文件名
                         matcher = filePattern.matcher(buffer);
@@ -228,34 +224,18 @@ public class GetStart {
                             for (String packageName : iconBean.getIconPackageName()) {
                                 //这里的 packageName 必定不会重复
                                 file = new File(newDir + "/" + packageName + ".png");
-                                //Log.d(TAG, "copyIconFile: " + file.toString());
                                 if (file.exists()) {
                                     continue;
                                 }
                                 fosto = new RandomAccessFile(file, "rw");
-                                //marked = true;
-                                //fosfrom.mark(Integer.MAX_VALUE);
-                                //Log.d(TAG, "copyIconFile: "+fosto.toString());
                                 byte bt[] = new byte[4096];
                                 int c;
                                 while ((c = fosfrom.read(bt)) > 0) {
                                     fosto.write(bt, 0, c);
-                            /*if(fosfrom.available() < 1024) { // 剩余的数据比1024字节少，一位一位读出再写入目的文件
-                                c = -1;
-                                while((c = fosfrom.read()) != -1) {
-                                    fosto.write(c);
                                 }
-                            }*/
-                                }
-                                //fosto.flush();
                                 fosfrom.seek(0);
                                 fosto.close();
                                 fosto = null;
-
-
-                                //fosfrom = null;
-                                //fosto = null;
-                                //fosfrom.reset();
                             }
                             fosfrom.close();
                             fosfrom = null;

@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         CardView licenseCard = findViewById(R.id.cardViewLicense);
         CardView authorCard = findViewById(R.id.cardViewAuthor);
         CardView coolapkCard = findViewById(R.id.cardViewCoolapk);
-        CardView aliCard = findViewById(R.id.cardViewAli);
+        //CardView aliCard = findViewById(R.id.cardViewAli);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         ImageView titleImage = findViewById(R.id.title_image);
         ImageView authorImage = findViewById(R.id.author_image);
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         licenseCard.setOnClickListener(this);
         authorCard.setOnClickListener(this);
         coolapkCard.setOnClickListener(this);
-        aliCard.setOnClickListener(this);
+        //aliCard.setOnClickListener(this);
     }
 
     private void setDirectory(int code, String title) {
@@ -144,10 +144,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.coolapk.com/u/533268"));
                 startActivity(intent);
                 break;
-            case R.id.cardViewAli:
+            /*case R.id.cardViewAli:
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://render.alipay.com/p/f/fd-j6lzqrgm/guiderofmklvtvw.html?shareId=2088722353860642&campStr=p1j%2BdzkZl018zOczaHT4Z5CLdPVCgrEXq89JsWOx1gdt05SIDMPg3PTxZbdPw9dL&sign=Awt2cbL%2FJihSCgBO9C1pDkAglkLrpC6CdSkx8wn%2BUwQ%3D&scene=offlinePaymentNewSns"));
                 startActivity(intent);
-                break;
+                break;*/
             default:
                 break;
         }
