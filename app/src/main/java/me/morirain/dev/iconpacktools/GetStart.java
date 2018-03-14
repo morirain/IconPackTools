@@ -36,8 +36,9 @@ public class GetStart {
 
     private static final Pattern filePattern = Pattern.compile("\"[_a-z0-9]+\"");
     private static final Pattern packagePattern = Pattern.compile("\\{[\\S]+/");
-    private static final Pattern finallyPattern = Pattern.compile("[^\" {/\\n]+");
-    private static final Pattern endPattern = Pattern.compile("<iconback");
+    //private static final Pattern finallyPattern = Pattern.compile("[^\" {/\\n]+");
+    private static final Pattern endPattern = Pattern.compile("<item[\\s]*");
+//    private static final Pattern componentPattern = Pattern.compile("[\\s]+component");
 
     private ProgressDialog dialog;
 
@@ -121,30 +122,22 @@ public class GetStart {
                     if (!isEmpty(buffer)) {
 
                         tempString = "";
-                        //检测是否已结束
+                        //检测是否需要跳过
                         matcher = endPattern.matcher(buffer);
                         while (matcher.find()) {
                             tempString = matcher.group();
                         }
-                        if (tempString.equals("<iconback")) {
-                            reader.close();
-                            break;
+                        if (isEmpty(tempString)) {
+                            continue;
                         }
                         // 读取文件名
                         matcher = filePattern.matcher(buffer);
                         while (matcher.find()) {
                             tempString = matcher.group();
                         }
-                        matcher = finallyPattern.matcher(tempString);
-                        while (matcher.find()) {
-                            tempString = matcher.group();
-                            //Log.d(TAG, "start: " + tempString);
-                        }
+                        tempString = tempString.replace("\"", "");
                         if (!isEmpty(tempString)) {
-                            //iconList.add(
                             iconBean = IconBean.init(tempString, path);
-                            //Log.d(TAG, "start: 2222222222gggggggggggggggggsdggggggggggggggggggg2222222222221" + );
-                            //);
                         }
                         tempString = "";
 
@@ -153,27 +146,18 @@ public class GetStart {
                         while (matcher.find()) {
                             tempString = matcher.group();
                         }
-                        matcher = finallyPattern.matcher(tempString);
+                        tempString = tempString.replace("{", "");
+                        tempString = tempString.replace("/", "");
                         while (matcher.find()) {
                             tempString = matcher.group();
-                            //Log.d(TAG, "start: " + tempString);
                         }
                         if ((!isEmpty(tempString)) && iconBean != null) {
-                            //iconList.add(
                             iconBean.addIconPackageName(tempString);
-                            //Log.d(TAG, "start: 2222222222gggggggggggggggggsdggggggggggggggggggg2222222222221" + );
-                            //);
                         }
                         iconBean = null;
 
                     }
-                    //sbData.append(buffer).append("\n");
                 }
-                //if (sbData.length() > 0) {
-                //sbData.setLength(sbData.length() - 1);
-                //}
-
-                //return sbData.toString();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -187,6 +171,96 @@ public class GetStart {
             }
             return true;
         }
+
+/*        private boolean thisLineHasCom(String str) {
+            //若无component 跳到下一行
+            String tempString = "";
+            Matcher matcher = componentPattern.matcher(str);
+            while (matcher.find()) {
+                tempString = matcher.group();
+            }
+            if (isEmpty(tempString)) {
+                return false;
+            }
+            return true;
+        }
+
+        private boolean start() {
+            Matcher matcher;
+            String tempString;
+            IconBean iconBean = null;
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(appFilter));
+                String buffer;
+                boolean comPn = false;
+                while ((buffer = reader.readLine()) != null) {
+                    if (!isEmpty(buffer)) {
+
+                        tempString = "";
+                        //检测上一行是否含有item 若有 读component
+                        if (comPn = true) {
+                            if (thisLineHasCom(buffer)) {
+
+                            }
+                        }
+                        //检测是否需要跳过 读取<item头
+                        matcher = endPattern.matcher(buffer);
+                        while (matcher.find()) {
+                            tempString = matcher.group();
+                        }
+                        //若为空 则跳过
+                        if (isEmpty(tempString)) {
+                            continue;
+                        } else {
+                            if (!thisLineHasCom(buffer)) {
+                                comPn = true;
+                                continue;
+                            }
+
+                        }
+                        comPn = false;
+                        // 读取文件名
+                        matcher = filePattern.matcher(buffer);
+                        while (matcher.find()) {
+                            tempString = matcher.group();
+                        }
+                        tempString = tempString.replace("\"", "");
+                        if (!isEmpty(tempString)) {
+                            iconBean = IconBean.init(tempString, path);
+                        }
+                        tempString = "";
+
+                        //读取包名
+                        matcher = packagePattern.matcher(buffer);
+                        while (matcher.find()) {
+                            tempString = matcher.group();
+                        }
+                        tempString = tempString.replace("{", "");
+                        tempString = tempString.replace("/", "");
+                        while (matcher.find()) {
+                            tempString = matcher.group();
+                        }
+                        if ((!isEmpty(tempString)) && iconBean != null) {
+                            iconBean.addIconPackageName(tempString);
+                        }
+                        iconBean = null;
+
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return true;
+        }*/
 
 
         @Override
@@ -233,29 +307,14 @@ public class GetStart {
                                     continue;
                                 }
                                 fosto = new RandomAccessFile(file, "rw");
-                                //marked = true;
-                                //fosfrom.mark(Integer.MAX_VALUE);
-                                //Log.d(TAG, "copyIconFile: "+fosto.toString());
                                 byte bt[] = new byte[4096];
                                 int c;
                                 while ((c = fosfrom.read(bt)) > 0) {
                                     fosto.write(bt, 0, c);
-                            /*if(fosfrom.available() < 1024) { // 剩余的数据比1024字节少，一位一位读出再写入目的文件
-                                c = -1;
-                                while((c = fosfrom.read()) != -1) {
-                                    fosto.write(c);
                                 }
-                            }*/
-                                }
-                                //fosto.flush();
                                 fosfrom.seek(0);
                                 fosto.close();
                                 fosto = null;
-
-
-                                //fosfrom = null;
-                                //fosto = null;
-                                //fosfrom.reset();
                             }
                             fosfrom.close();
                             fosfrom = null;
@@ -286,102 +345,6 @@ public class GetStart {
                 return true;
 
         }
-
-
-
-        /*@Override
-        protected Boolean doInBackground(List<IconBean>[] lists) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (doInTask(lists)) {
-                return true;
-            }
-                File newDir;
-                String dirName = path + "/" + "NewIcon";
-                BufferedInputStream fosfrom = null;
-                OutputStream fosto = null;
-                File file;
-                List<IconBean> list = lists[0];
-                if (!start()) {
-                    return false;
-                }
-                Double number = (double)list.size();
-                Double proNum = (double) 0;
-                try {
-                    while (true) {
-                        newDir = new File(dirName);
-                        if (newDir.exists()) {
-                            dirName = dirName + "_new";
-                        } else {
-                            newDir.mkdir();
-                            break;
-                        }
-                    }
-                    for (IconBean iconBean : list) {
-                        if (iconBean.isEff()) {
-                    *//*file = iconBean.getFile();
-                    if (!file.exists()) {
-                        continue;
-                    }*//*
-                            //fosfrom = new FileInputStream(iconBean.getFile());
-
-                            for (String packageName : iconBean.getIconPackageName()) {
-                                fosfrom = new BufferedInputStream(new FileInputStream(iconBean.getFile()));
-                                //这里的 packageName 必定不会重复
-                                file = new File(newDir + "/" + packageName + ".png");
-                                Log.d(TAG, "copyIconFile: " + file.toString());
-                                if (file.exists()) {
-                                    continue;
-                                }
-                                fosto = new FileOutputStream(file);
-                                //marked = true;
-                                //fosfrom.mark(Integer.MAX_VALUE);
-                                //Log.d(TAG, "copyIconFile: "+fosto.toString());
-                                byte bt[] = new byte[2048];
-                                int c;
-                                while ((c = fosfrom.read(bt)) > 0) {
-                                    fosto.write(bt, 0, c);
-                            *//*if(fosfrom.available() < 1024) { // 剩余的数据比1024字节少，一位一位读出再写入目的文件
-                                c = -1;
-                                while((c = fosfrom.read()) != -1) {
-                                    fosto.write(c);
-                                }
-                            }*//*
-                                }
-                                fosto.flush();
-                                fosfrom.close();
-                                fosto.close();
-                                fosfrom = null;
-                                fosto = null;
-                                //fosfrom.reset();
-                            }
-                        }
-                        proNum += 1;
-                        publishProgress((int) ((proNum / number) * 100.0));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        if (fosfrom != null) {
-                            fosfrom.close();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        if (fosto != null) {
-                            fosto.close();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return true;
-        }*/
 
         @Override
         protected void onProgressUpdate(Integer... values) {
