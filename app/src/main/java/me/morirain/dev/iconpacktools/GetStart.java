@@ -1,8 +1,10 @@
 package me.morirain.dev.iconpacktools;
 
+import android.app.AlertDialog;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.graphics.drawable.Icon;
@@ -51,6 +53,8 @@ public class GetStart {
 
     private File appFilter;
 
+    private Context context;
+
     private static GetStart instance;
 
     private GetStart(){}
@@ -74,6 +78,7 @@ public class GetStart {
             return false;
         }
         this.path = path;
+        this.context = context;
         dialog = new ProgressDialog(context);
         dialog.setTitle("任务进行中");
         dialog.setCancelable(false);
@@ -103,6 +108,10 @@ public class GetStart {
     }
 
     class StartTask extends AsyncTask<List<IconBean>, Integer, Boolean> {
+
+        private int completeNum;
+        private int incompleteNum;
+        private int packNum;
 
         private boolean start() {
             Matcher matcher;
@@ -137,7 +146,9 @@ public class GetStart {
                             continue;
                         }
                         iconBean = IconBean.init(drawable, path);
-                        iconBean.addIconPackageName(matcher.group(1));
+                        if ( iconBean.addIconPackageName(matcher.group(1)) ) { //如果包名不重复
+                            packNum += 1;
+                        }
                     }
                     event = parser.next();
                 }
@@ -167,7 +178,7 @@ public class GetStart {
                     return false;
                 }
                 Double number = (double)list.size();
-                Double proNum = (double)0;
+                Double proNum = 0.0;
                 try {
                     while (true) {
                         newDir = new File(dirName);
@@ -205,8 +216,11 @@ public class GetStart {
                             fosfrom.close();
                             fosfrom = null;
                         }
-                        proNum += 1;
+                        proNum += 1.0;
                         publishProgress((int) ((proNum / number) * 100.0));
+                        completeNum = proNum.intValue();
+                        incompleteNum = (int) (number - proNum);
+
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -237,7 +251,18 @@ public class GetStart {
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             dialog.cancel();
-            Toast.makeText(BaseApplicaton.getContext(), "Complete", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+            dialogBuilder.setTitle("任务完成")
+                    .setMessage("成功转换 " + completeNum + "个图标\n" + "转换失败 " + incompleteNum + " 个图标\n" + "Appfilter 内总共定义了 " + packNum + " 个包名")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    })
+                    .setCancelable(true)
+                    .create()
+                    .show();
         }
     }
 
